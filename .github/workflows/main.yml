@@ -49,7 +49,7 @@ jobs:
             # The JDBC driver class
             # string
             # Optional
-            driver: ""
+            driver: ${{ secrets.LB_DEVOPS_DRIVER }}
         
             # The JDBC driver properties file
             # string
