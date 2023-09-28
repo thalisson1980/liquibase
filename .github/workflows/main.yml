@@ -81,4 +81,5 @@ jobs:
             # Optional
             username: ${{ secrets.LB_DEVOPS_USER }}
         
+            logLevel: INFO
         
