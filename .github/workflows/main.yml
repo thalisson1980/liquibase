@@ -21,17 +21,10 @@ jobs:
           username: ${{ secrets.LB_DEVOPS_USER }}
           logLevel: INFO
 
-      # Save the output to an existing file in the 'scripts' folder
-      - name: Save Liquibase Output
-        run: |
-          # Assuming 'changelog.xml' is the generated file
-          cp changelog.xml scripts/changelog.xml
-
       # Commit and push the updated file
       - name: Commit and Push Liquibase Output
         run: |
           git config --local user.email "thalisson1980@gmail.com"
           git config --local user.name "thalisson1980"
-          git add scripts/changelog.xml
           git commit -m "Update Liquibase output"
           git push
