@@ -26,14 +26,16 @@ jobs:
           changelog_files=($(echo "${{ steps.list_changelogs.outputs.changelogFile }}" | tr '\n' ' '))
           for changelog_file in "${changelog_files[@]}"; do
             echo "Running Liquibase update for $changelog_file"
-
-            # Run the Liquibase update action for each changelog file
-            # You can adjust the action's input parameters as needed
-            docker run --rm -v "$(pwd):/liquibase" liquibase/liquibase \
-              --changeLogFile="$changelog_file" \
-              --url="${{ secrets.LB_DEVOPS_URL }}" \
-              --driver="${{ secrets.LB_DEVOPS_DRIVER }}" \
-              --username="${{ secrets.LB_DEVOPS_USER }}" \
-              --password="${{ secrets.LB_DEVOPS_PASSWORD }}" \
-              update
+            
+            # Use the public Liquibase update action for each changelog file
+            # Pass the changelog file path as an input to the action
+            echo "::set-env name=CHANGELOG_FILE::$changelog_file"
+            uses: liquibase-github-actions/update@v4.23.2
+              with:
+                changelogFile: ${{ env.CHANGELOG_FILE }}
+                url: ${{ secrets.LB_DEVOPS_URL }}
+                driver: ${{ secrets.LB_DEVOPS_DRIVER }}
+                username: ${{ secrets.LB_DEVOPS_USER }}
+                password: ${{ secrets.LB_DEVOPS_PASSWORD }}
+                logLevel: INFO
           done
