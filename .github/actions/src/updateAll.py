@@ -34,7 +34,7 @@ def main():
     migrations_folder = "migrations"
 
     # Use glob to find all XML files in the migrations folder
-    changelog_files = glob.glob(os.path.join(migrations_folder, "*.xml"))
+    changelog_files = glob.glob(os.path.join(migrations_folder, "*.sql"))
     # Set your database connection details
     url, username, password = read_config_from_env()
 

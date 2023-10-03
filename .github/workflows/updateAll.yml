@@ -27,4 +27,4 @@ jobs:
         env:
          lb_devops_url: ${{ secrets.LB_DEVOPS_URL }}
          lb_devops_password: ${{ secrets.LB_DEVOPS_PASSWORD }}
-         lb_devops_username: ${{ secrets.LB_DEVOPS_USER }}
+         lb_devops_user: ${{ secrets.LB_DEVOPS_USER }}
