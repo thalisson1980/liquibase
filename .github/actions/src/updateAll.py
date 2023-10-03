@@ -5,12 +5,11 @@ import subprocess
 def read_config_from_env():
     # Read configuration from environment variables or use default values
     url = os.environ.get('INPUT_LB_DEVOPS_URL')
-    driver = os.environ['INPUT_LB_DEVOPS_DRIVER']
     username = os.environ['INPUT_LB_DEVOPS_USER']
     password = os.environ['INPUT_LB_DEVOPS_PASSWORD']
-    return url,driver, username, password
+    return url, username, password
 
-def run_liquibase_update(changelog_file, url, driver, username, password):
+def run_liquibase_update(changelog_file, url, username, password):
     # Construct the Liquibase update command
     command = [
         "docker", "run", "--rm",
@@ -18,7 +17,6 @@ def run_liquibase_update(changelog_file, url, driver, username, password):
         "liquibase/liquibase",
         "--changeLogFile", changelog_file,
         "--url", url,
-        "--driver", driver,
         "--username", username,
         "--password", password,
         "update"
@@ -38,11 +36,11 @@ def main():
     # Use glob to find all XML files in the migrations folder
     changelog_files = glob.glob(os.path.join(migrations_folder, "*.xml"))
     # Set your database connection details
-    url, driver, username, password = read_config_from_env()
+    url, username, password = read_config_from_env()
 
     # Iterate through the changelog files and run Liquibase update for each
     for changelog_file in changelog_files:
-        run_liquibase_update(changelog_file, url, driver, username, password)
+        run_liquibase_update(changelog_file, url, username, password)
 
 if __name__ == "__main__":
     main()
