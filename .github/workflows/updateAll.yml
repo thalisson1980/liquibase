@@ -24,7 +24,7 @@ jobs:
       - name: Run Liquibase updates
         run: |
           changelog_files=($(echo "${{ steps.list_changelogs.outputs.changelogFile }}" | tr '\n' ' '))
-          docker COPY docker-entrypoint.sh /liquibase/docker-entrypoint.sh
+          COPY docker-entrypoint.sh /liquibase/docker-entrypoint.sh
           for changelog_file in "${changelog_files[@]}"; do
             echo "Running Liquibase update for $changelog_file"
 
