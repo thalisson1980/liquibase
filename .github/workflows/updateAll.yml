@@ -14,7 +14,7 @@ jobs:
       - name: List changelog files
         run: |
           changelog_folder="migrations"
-          for file in $changelog_folder/*.xml; do
+          for file in $changelog_folder/*.sql; do
             echo "Found changelog file: $file"
             # Run the Liquibase update action for each changelog file
             echo "::set-output name=changelogFile::$file"
@@ -24,9 +24,10 @@ jobs:
       - name: Run Liquibase updates
         run: |
           changelog_files=($(echo "${{ steps.list_changelogs.outputs.changelogFile }}" | tr '\n' ' '))
+          docker COPY docker-entrypoint.sh /liquibase/docker-entrypoint.sh
           for changelog_file in "${changelog_files[@]}"; do
             echo "Running Liquibase update for $changelog_file"
-            
+
             # Run the Liquibase update action for each changelog file
             # You can adjust the action's input parameters as needed
             docker run --rm -v "$(pwd):/liquibase" liquibase/liquibase \
