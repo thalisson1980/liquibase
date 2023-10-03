@@ -4,9 +4,9 @@ import subprocess
 
 def read_config_from_env():
     # Read configuration from environment variables or use default values
-    url = os.environ.get('LB_DEVOPS_URL')
-    username = os.environ['LB_DEVOPS_USER']
-    password = os.environ['LB_DEVOPS_PASSWORD']
+    url = os.environ.get('lb_devops_url')
+    username = os.environ['lb_devops_user']
+    password = os.environ['lb_devops_password']
     return url, username, password
 
 def run_liquibase_update(changelog_file, url, username, password):
