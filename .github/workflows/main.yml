@@ -83,3 +83,36 @@ jobs:
         
             logLevel: INFO
         
+  liquibase_update_all:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: List changelog files
+        run: |
+          changelog_folder="migrations"
+          for file in $changelog_folder/*.xml; do
+            echo "Found changelog file: $file"
+            # Run the Liquibase update action for each changelog file
+            echo "::set-output name=changelogFile::$file"
+          done
+        id: list_changelogs
+
+      - name: Run Liquibase updates
+        run: |
+          changelog_files=($(echo "${{ steps.list_changelogs.outputs.changelogFile }}" | tr '\n' ' '))
+          for changelog_file in "${changelog_files[@]}"; do
+            echo "Running Liquibase update for $changelog_file"
+            
+            # Run the Liquibase update action for each changelog file
+            # You can adjust the action's input parameters as needed
+            docker run --rm -v "$(pwd):/liquibase" liquibase/liquibase \
+              --changeLogFile="$changelog_file" \
+              --url="${{ secrets.LB_DEVOPS_URL }}" \
+              --driver="${{ secrets.LB_DEVOPS_DRIVER }}" \
+              --username="${{ secrets.LB_DEVOPS_USER }}" \
+              --password="${{ secrets.LB_DEVOPS_PASSWORD }}" \
+              update
+          done

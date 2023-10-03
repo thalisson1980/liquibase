@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  liquibase_update:
+  liquibase_update_all:
     runs-on: ubuntu-latest
 
     steps:
