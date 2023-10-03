@@ -11,16 +11,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: List changelog files
-        run: |
-          changelog_folder="migrations"
-          for file in $changelog_folder/*.sql; do
-            echo "Found changelog file: $file"
-            # Run the Liquibase update action for each changelog file
-            echo "::set-output name=changelogFile::$file"
-          done
-        id: list_changelogs
-
       - name: Run Liquibase updates
         run: |
            python .github/actions/src/updateAll.py
