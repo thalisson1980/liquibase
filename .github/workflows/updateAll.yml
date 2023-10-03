@@ -26,6 +26,5 @@ jobs:
            python .github/actions/src/updateAll.py
         env:
          lb_devops_url: ${{ secrets.LB_DEVOPS_URL }}
-         lb_devops_driver: ${{ secrets.LB_DEVOPS_DRIVER }}
          lb_devops_password: ${{ secrets.LB_DEVOPS_PASSWORD }}
          lb_devops_username: ${{ secrets.LB_DEVOPS_USER }}
