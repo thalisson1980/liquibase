@@ -17,7 +17,7 @@ jobs:
       - name: List migration files
         run: |
           # Find all migration files in the migrations folder and store them in an array
-          migration_files=($(find migrations/ -type f -name "*.xml"))
+          migration_files=($(find migrations/ -type f -name "*.sql"))
 
           # Iterate through the array and trigger the Liquibase Update workflow for each file
           for file in "${migration_files[@]}"; do
