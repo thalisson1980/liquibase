@@ -19,6 +19,7 @@ def run_liquibase_update(changelog_file, url, username, password):
         "--url", url,
         "--username", username,
         "--password", password,
+        "--logLevel", "INFO",
         "update"
     ]
 
