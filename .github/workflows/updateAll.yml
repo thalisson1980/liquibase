@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      GH_TOKEN: "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"
+      GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
 
     steps:
       - name: Check out repository
@@ -28,6 +28,6 @@ jobs:
 
             # Trigger the Liquibase Update workflow for this file
             echo "Triggering Liquibase Update for $filename"
-            gh workflow run 70696634 -f changelogFile="$filename"
+            gh workflow run Liquibase_Update -f changelogFile="$filename"
           done
         shell: bash

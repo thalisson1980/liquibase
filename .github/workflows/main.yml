@@ -1,4 +1,4 @@
-name: Liquibase Update
+name: Liquibase_Update
 
 on:
     workflow_dispatch:
