@@ -2,6 +2,11 @@ name: Liquibase Update
 
 on:
     workflow_dispatch:
+      inputs:
+        changelogFile:
+          description: 'Name of the changelog file with extension, has to be contained in the migrations folder!'
+          required: true
+          default: 'changelog.sql'
 
 jobs:
   liquibase_update:
@@ -14,7 +19,7 @@ jobs:
             # The root changelog
             # string
             # Required
-            changelogFile: ${{ secrets.LB_DEVOPS_CHANGELOGFILE }}
+            changelogFile: 'migrations/${{ github.event.inputs.changelogFile }}'
         
             # The JDBC database connection URL
             # string
