@@ -8,3 +8,8 @@ create table associate (
     id int primary key,
     address varchar(255)
 );
+
+create table intern (
+    id int primary key,
+    address varchar(255)
+);
