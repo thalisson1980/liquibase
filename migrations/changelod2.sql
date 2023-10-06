@@ -1,5 +1,5 @@
 --changeset nvoxland:12
-create table worker (
+create table associate (
     id int primary key,
     address varchar(255)
 );
