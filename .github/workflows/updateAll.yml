@@ -27,7 +27,7 @@ jobs:
             filename_without_extension="${filename%.*}"
 
             # Trigger the Liquibase Update workflow for this file
-            echo "Triggering Liquibase Update for $file"
-            gh workflow run 70696634 -f changelogFile="$file"
+            echo "Triggering Liquibase Update for $filename"
+            gh workflow run 70696634 -f changelogFile="$filename"
           done
         shell: bash
