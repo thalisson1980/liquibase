@@ -1,89 +1,115 @@
 name: Liquibase_Update
 
 on:
-    workflow_dispatch:
-      inputs:
-        changelogFile:
-          description: 'Name of the changelog file with extension, has to be contained in the migrations folder!'
-          required: true
-          default: 'changelog.sql'
+  workflow_dispatch:
+    inputs:
+      changelogFile:
+        description: 'Select the changelog file from the list in the migrations folder'
+        required: true
 
 jobs:
-  liquibase_update:
+  list_migrations:
     runs-on: ubuntu-latest
 
     steps:
-        - uses: actions/checkout@v3
-        - uses: liquibase-github-actions/update@v4.23.2
-          with:
-            # The root changelog
-            # string
-            # Required
-            changelogFile: 'migrations/${{ github.event.inputs.changelogFile }}'
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: List Migration Files
+        id: list_files
+        run: |
+          # List files in the migrations folder
+          cd migrations
+          ls -1 *.sql
+        continue-on-error: true
+
+      - name: Create Selection Menu
+        id: select_file
+        run: |
+          # Create a list of files from the previous step's output
+          file_list=$(echo "${{ steps.list_files.outputs.stdout }}" | tr '\n' ',' | sed 's/,$//')
+          echo "::set-output name=files::$file_list"
+        shell: bash
+
+  liquibase_update:
+    needs: list_migrations
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Liquibase Update
+        uses: liquibase-github-actions/update@v4.23.2
+        with:
+          # The root changelog
+          # string
+          # Required
+          changelogFile: ${{ format('{0}/migrations/{1}', github.workspace, needs.list_migrations.outputs.files) }}
         
-            # The JDBC database connection URL
-            # string
-            # Required
-            url: ${{ secrets.LB_DEVOPS_URL }}
+          # The JDBC database connection URL
+          # string
+          # Required
+          url: ${{ secrets.LB_DEVOPS_URL }}
         
-            # Fully-qualified class which specifies a ChangeExecListener
-            # string
-            # Optional
-            changeExecListenerClass: ""
+          # Fully-qualified class which specifies a ChangeExecListener
+          # string
+          # Optional
+          changeExecListenerClass: ""
         
-            # Path to a properties file for the ChangeExecListenerClass
-            # string
-            # Optional
-            changeExecListenerPropertiesFile: ""
+          # Path to a properties file for the ChangeExecListenerClass
+          # string
+          # Optional
+          changeExecListenerPropertiesFile: ""
         
-            # Changeset contexts to match
-            # string
-            # Optional
-            contextFilter: ""
+          # Changeset contexts to match
+          # string
+          # Optional
+          contextFilter: ""
         
-            # The default catalog name to use for the database connection
-            # string
-            # Optional
-            defaultCatalogName: ""
+          # The default catalog name to use for the database connection
+          # string
+          # Optional
+          defaultCatalogName: ""
         
-            # The default schema name to use for the database connection
-            # string
-            # Optional
-            defaultSchemaName: ""
+          # The default schema name to use for the database connection
+          # string
+          # Optional
+          defaultSchemaName: ""
         
-            # The JDBC driver class
-            # string
-            # Optional
-            driver: ${{ secrets.LB_DEVOPS_DRIVER }}
+          # The JDBC driver class
+          # string
+          # Optional
+          driver: ${{ secrets.LB_DEVOPS_DRIVER }}
         
-            # The JDBC driver properties file
-            # string
-            # Optional
-            driverPropertiesFile: ""
+          # The JDBC driver properties file
+          # string
+          # Optional
+          driverPropertiesFile: ""
         
-            # Changeset labels to match
-            # string
-            # Optional
-            labelFilter: ""
+          # Changeset labels to match
+          # string
+          # Optional
+          labelFilter: ""
         
-            # Password to use to connect to the database
-            # string
-            # Optional
-            password: ${{ secrets.LB_DEVOPS_PASSWORD }}
+          # Password to use to connect to the database
+          # string
+          # Optional
+          password: ${{ secrets.LB_DEVOPS_PASSWORD }}
         
-            # If set to true and any changeset in a deployment fails, then the update operation stops, and liquibase attempts to rollback all changesets just deployed. A changeset marked "fail-on-error=false" does not trigger as an error, therefore rollback-on-error will not occur. Additionally, if a changeset is not auto-rollback compliant or does not have a rollback script, then no rollback-on-error will occur for any changeset.
-            # bool
-            # Optional
-            rollbackOnError: ""
+          # If set to true and any changeset in a deployment fails, then the update operation stops, and liquibase attempts to rollback all changesets just deployed. A changeset marked "fail-on-error=false" does not trigger as an error, therefore rollback-on-error will not occur. Additionally, if a changeset is not auto-rollback compliant or does not have a rollback script, then no rollback-on-error will occur for any changeset.
+          # bool
+          # Optional
+          rollbackOnError: ""
         
-            # Type of update results summary to show.  Values can be "off", "summary", or "verbose".
-            # string
-            # Optional
-            showSummary: ""
+          # Type of update results summary to show.  Values can be "off", "summary", or "verbose".
+          # string
+          # Optional
+          showSummary: ""
         
-            # Username to use to connect to the database
-            # string
-            # Optional
-            username: ${{ secrets.LB_DEVOPS_USER }}
+          # Username to use to connect to the database
+          # string
+          # Optional
+          username: ${{ secrets.LB_DEVOPS_USER }}
         
-            logLevel: INFO
+          logLevel: INFO
