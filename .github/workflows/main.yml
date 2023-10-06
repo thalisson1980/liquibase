@@ -18,17 +18,21 @@ jobs:
       - name: List Migration Files
         id: list_files
         run: |
-          # List files in the migrations folder
-          cd migrations
-          ls -1 *.sql
+          # Find .sql files in the migrations folder and list them
+          changelog_files=$(find migrations -type f -name "*.sql" -exec basename {} \;)
+          echo "::set-output name=files::$changelog_files"
         continue-on-error: true
 
       - name: Create Selection Menu
         id: select_file
         run: |
-          # Create a list of files from the previous step's output
-          file_list=$(echo "${{ steps.list_files.outputs.stdout }}" | tr '\n' ',' | sed 's/,$//')
-          echo "::set-output name=files::$file_list"
+          # Create an array from the list of files
+          IFS=',' read -ra files_array <<< "${{ steps.list_files.outputs.files }}"
+          echo "Available changelog files:"
+          for file in "${files_array[@]}"; do
+            echo "::add-mask::$file"  # Mask the filenames
+            echo " - $file"
+          done
         shell: bash
 
   liquibase_update:
@@ -45,7 +49,7 @@ jobs:
           # The root changelog
           # string
           # Required
-          changelogFile: ${{ format('{0}/migrations/{1}', github.workspace, needs.list_migrations.outputs.files) }}
+          changelogFile: "migrations/${{ github.event.inputs.changelogFile }}"
         
           # The JDBC database connection URL
           # string
