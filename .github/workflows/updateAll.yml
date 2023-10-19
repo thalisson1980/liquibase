@@ -14,6 +14,25 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
+
+      - name: Generate Matrix
+        id: generate-matrix
+        run: |
+          # Generate the matrix in JSON format
+          matrix_string="["
+          first=true
+          for file in $(find migrations -type f); do
+            if [ "$first" = false ]; then
+              matrix_string="${matrix_string},"
+            fi
+            matrix_string="${matrix_string}\"$file\""
+            first=false
+          done
+          matrix_string="${matrix_string}]"
+          echo "::set-output name=matrix::$matrix_string"
+        shell: bash
+
+
       - name: List migration files
         run: |
           # Find all migration files in the migrations folder and store them in an array
@@ -28,8 +47,6 @@ jobs:
 
             # Trigger the Liquibase Update workflow for this file
             echo "Triggering Liquibase Update for $filename"
-            uses .github/actions/main.yml
-            with:
-              changelogFile: "$filename"
+            gh workflow run Liquibase_Update -f changelogFile="$filename"
           done
         shell: bash
