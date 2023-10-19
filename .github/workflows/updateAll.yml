@@ -3,6 +3,11 @@ name: Liquibase Update All
 on:
   workflow_dispatch:
 
+    inputs:
+      changelogFile:
+        description: 'Name of the changelog file with extension'
+        required: false
+
 jobs:
   matrix_setup:
     runs-on: ubuntu-latest
@@ -13,9 +18,20 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
 
+      - name: Check if changelogFile is empty
+        id: check-changelog
+        run: |
+          if [[ -z "${{ github.event.inputs.changelogFile }}" ]]; then
+            echo "::set-output name=generateMatrix::true"
+          else
+          echo "::set-output name=matrix::"[${{ github.event.inputs.changelogFile }}]""
+          fi
+        shell: bash
+
 
       - name: Generate Matrix
         id: set-matrix
+        if: steps.check-changelog.outputs.generateMatrix == 'true'
         run: |
           # Generate the matrix in JSON format
           matrix_string="["
