@@ -16,27 +16,46 @@ jobs:
 
       - name: List migration files
         run: |
-          # Find all migration files in the migrations folder and store them in an array
-          migration_files=($(find migrations/ -type f -name "*.sql"))
+           # Find all migration files in the migrations folder and store them in an array
+           migration_files=($(find migrations/ -type f -name "*.sql"))
 
-          # Iterate through the array and trigger the Liquibase Update workflow for each file
-          for file in "${migration_files[@]}"; do
+           # Iterate through the array and trigger the Liquibase Update workflow for each file
+           for file in "${migration_files[@]}"; do
             echo "Processing file: $file"
             # Extract the filename without extension
             filename=$(basename -- "$file")
             filename_without_extension="${filename%.*}"
-            
+
+            # Call the Liquibase GitHub action for this file
+            echo "Calling Liquibase Update action for $filename"
+            echo "::group::Calling Liquibase Update action"
+            echo "Using changelogFile: $file"
+            echo "Using url: ${{ secrets.LB_DEVOPS_URL }}"
+            echo "Using driver: ${{ secrets.LB_DEVOPS_DRIVER }}"
+            echo "Using password: ${{ secrets.LB_DEVOPS_PASSWORD }}"
+            echo "Using username: ${{ secrets.LB_DEVOPS_USER }}"
+            echo "Using logLevel: INFO"
+            echo "::endgroup::"
+
+            # Run the Liquibase GitHub action using a step
+            echo "::group::Running Liquibase Update action"
+            echo "::set-output name=changelogFile::$file"  # Pass the changelogFile to the step
+            env:
+              LB_DEVOPS_URL: ${{ secrets.LB_DEVOPS_URL }}
+              LB_DEVOPS_DRIVER: ${{ secrets.LB_DEVOPS_DRIVER }}
+              LB_DEVOPS_PASSWORD: ${{ secrets.LB_DEVOPS_PASSWORD }}
+              LB_DEVOPS_USER: ${{ secrets.LB_DEVOPS_USER }}
             run: |
               # Use the GitHub public action to run Liquibase Update
               name: Run update
               uses: liquibase-github-actions/update@v4.23.2
               with:
                 changelogFile: ${{ steps.liquibase_update.outputs.changelogFile }}
-                url: ${{ secrets.LB_DEVOPS_URL }}
-                driver: ${{ secrets.LB_DEVOPS_DRIVER }}
-                password: ${{ secrets.LB_DEVOPS_PASSWORD }}
-                username: ${{ secrets.LB_DEVOPS_USER }}
+                url: ${{ env.LB_DEVOPS_URL }}
+                driver: ${{ env.LB_DEVOPS_DRIVER }}
+                password: ${{ env.LB_DEVOPS_PASSWORD }}
+                username: ${{ env.LB_DEVOPS_USER }}
                 logLevel: INFO
             echo "::endgroup::"
-          done
+           done
         shell: bash
