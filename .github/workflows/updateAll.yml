@@ -30,6 +30,7 @@ jobs:
           done
           matrix_string="${matrix_string}]"
           echo "::set-output name=matrix::$matrix_string"
+          echo "$matrix_string"
         shell: bash
 
 
