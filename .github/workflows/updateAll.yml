@@ -25,9 +25,18 @@ jobs:
             # Extract the filename without extension
             filename=$(basename -- "$file")
             filename_without_extension="${filename%.*}"
-
-            # Trigger the Liquibase Update action for this file
-            echo "Triggering Liquibase Update for $filename"
-            gh repo dispatch --ref main --event run-liquibase-action --inputs changelogFile="$file"
+            
+            run: |
+              # Use the GitHub public action to run Liquibase Update
+              name: Run update
+              uses: liquibase-github-actions/update@v4.23.2
+              with:
+                changelogFile: ${{ steps.liquibase_update.outputs.changelogFile }}
+                url: ${{ secrets.LB_DEVOPS_URL }}
+                driver: ${{ secrets.LB_DEVOPS_DRIVER }}
+                password: ${{ secrets.LB_DEVOPS_PASSWORD }}
+                username: ${{ secrets.LB_DEVOPS_USER }}
+                logLevel: INFO
+            echo "::endgroup::"
           done
         shell: bash
