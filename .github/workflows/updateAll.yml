@@ -28,6 +28,6 @@ jobs:
 
             # Trigger the Liquibase Update action for this file
             echo "Triggering Liquibase Update for $filename"
-            gh workflow run main.yml --ref main --inputs changelogFile="$file"
+            gh repo dispatch --ref main --event run-liquibase-action --inputs changelogFile="$file"
           done
         shell: bash
