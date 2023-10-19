@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
       inputs:
         changelogFile:
-          description: 'Name of the changelog file with extension, has to be contained in the migrations folder!'
+          description: 'Name of the changelog file with extension'
           required: true
           default: 'changelog.sql'
 
