@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
+      generateMatrix: ${{ steps.check-changelog.outputs.generateMatrix }}
 
     steps:
       - name: Check out repository
@@ -24,10 +25,20 @@ jobs:
           if [[ -z "${{ github.event.inputs.changelogFile }}" ]]; then
             echo "::set-output name=generateMatrix::true"
           else
-          echo "::set-output name=matrix::[\"${{ github.event.inputs.changelogFile }}\"]"
-          echo "[\"${{ github.event.inputs.changelogFile }}\"]"
+          echo "::set-output name=generateMatrix::false"
           fi
         shell: bash
+
+      - name: Run update
+        uses: liquibase-github-actions/update@v4.23.2
+        if: steps.check-changelog.outputs.generateMatrix == 'false'
+        with:
+          changelogFile: ${{ github.event.inputs.changelogFile }}
+          url: ${{ secrets.LB_DEVOPS_URL }}
+          driver: ${{ secrets.LB_DEVOPS_DRIVER }}     
+          password: ${{ secrets.LB_DEVOPS_PASSWORD }}
+          username: ${{ secrets.LB_DEVOPS_USER }}
+          logLevel: INFO
 
 
       - name: Generate Matrix
@@ -53,6 +64,7 @@ jobs:
   perform_update:
     needs: matrix_setup
     runs-on: ubuntu-latest
+    if: needs.matrix_setup.outputs.generateMatrix == 'true'
     strategy:
       matrix:
         files: ${{fromJson(needs.matrix_setup.outputs.matrix)}}
