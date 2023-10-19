@@ -4,11 +4,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  liquibase_update:
+  matrix_setup:
     runs-on: ubuntu-latest
-
-    env:
-      GH_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
 
     steps:
       - name: Check out repository
@@ -16,7 +15,7 @@ jobs:
 
 
       - name: Generate Matrix
-        id: generate-matrix
+        id: set-matrix
         run: |
           # Generate the matrix in JSON format
           matrix_string="["
@@ -34,20 +33,22 @@ jobs:
         shell: bash
 
 
-      - name: List migration files
-        run: |
-          # Find all migration files in the migrations folder and store them in an array
-          migration_files=($(find migrations/ -type f -name "*.sql"))
+  perform_update:
+    needs: matrix_setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{fromJson(needs.matrix_setup.outputs.matrix)}}
+    
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-          # Iterate through the array and trigger the Liquibase Update workflow for each file
-          for file in "${migration_files[@]}"; do
-            echo "Processing file: $file"
-            # Extract the filename without extension
-            filename=$(basename -- "$file")
-            filename_without_extension="${filename%.*}"
-
-            # Trigger the Liquibase Update workflow for this file
-            echo "Triggering Liquibase Update for $filename"
-            gh workflow run Liquibase_Update -f changelogFile="$filename"
-          done
-        shell: bash
+      - name: Run update
+        uses: liquibase-github-actions/update@v4.23.2
+        with:
+          changelogFile: ${{ matrix }}
+          url: ${{ secrets.LB_DEVOPS_URL }}
+          driver: ${{ secrets.LB_DEVOPS_DRIVER }}     
+          password: ${{ secrets.LB_DEVOPS_PASSWORD }}
+          username: ${{ secrets.LB_DEVOPS_USER }}
+          logLevel: INFO
