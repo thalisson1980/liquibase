@@ -37,7 +37,8 @@ jobs:
     needs: matrix_setup
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{fromJson(needs.matrix_setup.outputs.matrix)}}
+      matrix:
+        files: ${{fromJson(needs.matrix_setup.outputs.matrix)}}
     
     steps:
       - name: Check out repository
@@ -46,7 +47,7 @@ jobs:
       - name: Run update
         uses: liquibase-github-actions/update@v4.23.2
         with:
-          changelogFile: ${{ matrix }}
+          changelogFile: ${{ matrix.files }}
           url: ${{ secrets.LB_DEVOPS_URL }}
           driver: ${{ secrets.LB_DEVOPS_DRIVER }}     
           password: ${{ secrets.LB_DEVOPS_PASSWORD }}
