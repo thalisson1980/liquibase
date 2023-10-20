@@ -49,7 +49,7 @@ runs:
           LB_VERSION="4.24.0"
           curl -L https://github.com/liquibase/liquibase/releases/download/v${LB_VERSION}/liquibase-${LB_VERSION}.zip --output liquibase-${LB_VERSION}.zip
           unzip -o -d liquibase liquibase-${LB_VERSION}.zip
-          ./liquibase/liquibase --version
+          echo "./liquibase/liquibase --version"
           
           # Move Liquibase to a directory in your PATH
           sudo mv liquibase /usr/local/bin/
