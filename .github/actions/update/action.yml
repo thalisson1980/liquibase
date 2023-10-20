@@ -41,6 +41,10 @@ runs:
           username: ${{ inputs.USER }}
           logLevel: INFO
 
+                 
+      - name: Setup Java JDK   
+        uses: actions/setup-java@v3.13.0
+
 
       - name: Set up Liquibase
         if: steps.check-changelog.outputs.generateMatrix == 'true'
