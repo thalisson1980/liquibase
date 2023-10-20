@@ -5,6 +5,7 @@ on:
         inputs:
          changelogFile:
             required: false
+            type: array
 
 jobs:
  build:

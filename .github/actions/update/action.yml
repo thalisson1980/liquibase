@@ -13,7 +13,8 @@ inputs:
     description: 'Name of the changelog file with extension'
     required: false
 
-  runs:
+runs:
+  update:
     using: 'composite'
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -48,15 +49,19 @@ inputs:
       - name: Generate Matrix
         id: set-matrix
         if: steps.check-changelog.outputs.generateMatrix == 'true'
-        run: |
-          # Replace with your actual Liquibase update command
-          changelogFile="${{ github.event.inputs.changelogFile }}"
-          url="${{ github.event.inputs.URL }}"
-          username="${{ github.event.inputs.USER }}"
-          password="${{ github.event.inputs.PASSWORD }}"
+         run: |
+          for file in migrations/*; do
+            if [[ -f "$file" ]]; then
+              echo "Updating using Liquibase for file: $file"
+              changelogFile="${{ $file }}"
+              url="${{ inputs.URL }}"
+              username="${{ inputs.USER }}"
+              password="${{ inputs.PASSWORD }}"
 
-          liquibase --changeLogFile="$changelogFile" \
-                    --url="$url" \
-                    --username="$username" \
-                    --password="$password" \
-                    update
+              liquibase --changeLogFile="$changelogFile" \
+                        --url="$url" \
+                        --username="$username" \
+                        --password="$password" \
+                        update
+            fi
+          done

@@ -5,22 +5,27 @@ inputs:
     description: 'Name of the changelog file with extension'
     required: true
     default: 'changelog.sql'
+    type: string
 
 runs:
   using: 'composite'
-  steps:
-        - name: Check out repository
-          uses: actions/checkout@v3
+  strategy:
+    matrix:
+      files: ${{fromJson(needs.update.outputs.matrix)}}
+    
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
 
-        - name: Run update
-          uses: liquibase-github-actions/update@v4.23.2
-          with:
-            changelogFile: 'migrations/${{ github.event.inputs.changelogFile }}'
-            url: ${{ secrets.LB_DEVOPS_URL }}
-            driver: ${{ secrets.LB_DEVOPS_DRIVER }}     
-            password: ${{ secrets.LB_DEVOPS_PASSWORD }}
-            username: ${{ secrets.LB_DEVOPS_USER }}
-            logLevel: INFO
+      - name: Run update
+        uses: liquibase-github-actions/update@v4.23.2
+        with:
+          changelogFile: ${{ matrix.files }}
+          url: ${{ inputs.URL }}
+          driver: ${{ inputs.DRIVER }}     
+          password: ${{ inputs.PASSWORD }}
+          username: ${{ inputs.USER }}
+          logLevel: INFO
 
 
           
