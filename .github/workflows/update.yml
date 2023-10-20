@@ -1,11 +1,11 @@
-name: Liquibase Update All
+name: Liquibase Update
 
 on:
   workflow_dispatch:
 
     inputs:
       changelogFile:
-        description: 'Name of the changelog, if empty runs all files'
+        description: 'Name of the changelog file, if empty runs all files'
         required: false
 
 jobs:
