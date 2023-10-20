@@ -14,7 +14,6 @@ inputs:
     required: false
 
 runs:
-  update:
     using: 'composite'
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
