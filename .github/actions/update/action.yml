@@ -15,9 +15,6 @@ inputs:
 
 runs:
     using: 'composite'
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-      generateMatrix: ${{ steps.check-changelog.outputs.generateMatrix }}
 
     steps:
       - name: Check out repository
