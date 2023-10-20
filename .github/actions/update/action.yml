@@ -75,6 +75,7 @@ runs:
                         --url="$url" \
                         --username="$username" \
                         --password="$password" \
+                        --classpath=/usr/local/bin \
                         update
             fi
           done
