@@ -1,9 +1,9 @@
 name: Liquibase Update
 
-    inputs:
-      changelogFile:
-        description: 'Name of the changelog file with extension'
-        required: false
+inputs:
+  changelogFile:
+    description: 'Name of the changelog file with extension'
+    required: false
 
 jobs:
   update:
