@@ -14,9 +14,8 @@ jobs:
       uses: actions/checkout@main
 
     - name: php
-      if: ${{ inputs.LANGUAGE == 'php' }}
       uses: thalisson1980/liquibase/.github/actions/update@main
       with:
-        LANGUAGE_VERSION: ${{inputs.LANGUAGE_VERSION}}
+        changelogFile: ${{inputs.changelogFile}}
           
         
