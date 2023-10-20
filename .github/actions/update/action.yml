@@ -13,9 +13,9 @@ inputs:
     description: 'Name of the changelog file with extension'
     required: false
 
-runs:
+jobs:
   update:
-    using: 'composite'
+    runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       generateMatrix: ${{ steps.check-changelog.outputs.generateMatrix }}
@@ -68,7 +68,7 @@ runs:
 
   update_all:
     needs: update
-    using: 'composite'
+    runs-on: ubuntu-latest
     if: needs.update.outputs.generateMatrix == 'true'
     strategy:
       matrix:
