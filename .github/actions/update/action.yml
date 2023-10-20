@@ -15,7 +15,9 @@ inputs:
 
 runs:
     using: 'composite'
-
+    strategy:
+       matrix:
+        files:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -65,6 +67,7 @@ runs:
           echo 'export PATH="$PATH:/usr/local/bin"' >> ~/.bashrc
         shell: bash
 
+
       - name: Generate Matrix
         id: set-matrix
         if: steps.check-changelog.outputs.generateMatrix == 'true'
@@ -77,18 +80,12 @@ runs:
               username="${{ inputs.USER }}"
               password="${{ inputs.PASSWORD }}"
 
-              echo "::group::Liquibase Update"
-              # Run the liquibase-github-actions/update action for each changelog file
-              - name: Update all
-                uses: liquibase-github-actions/update@v4.23.2
-                with:
-                  changelogFile: ${{ changelogFile }}
-                  url: ${{ url }}
-                  driver: ${{ inputs.DRIVER }}
-                  password: ${{ password }}
-                  username: ${{ username }}
-                  logLevel: INFO
-              echo "::endgroup::"
+              liquibase --changeLogFile="$changelogFile" \
+                        --url="$url" \
+                        --username="$username" \
+                        --password="$password" \
+                        --classpath=/usr/local/bin \
+                        update
             fi
           done
         shell: bash

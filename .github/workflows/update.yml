@@ -1,25 +1,84 @@
-name : update 
+name: Liquibase Update All
 
 on:
-    workflow_dispatch:
-        inputs:
-         changelogFile:
-            required: false
+  workflow_dispatch:
+
+    inputs:
+      changelogFile:
+        description: 'Name of the changelog file with extension'
+        required: false
 
 jobs:
- build:
-  runs-on: ubuntu-latest
-  steps:
-    - name: checkout
-      uses: actions/checkout@main
+  update_one:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      generateMatrix: ${{ steps.check-changelog.outputs.generateMatrix }}
 
-    - name: update
-      uses: thalisson1980/liquibase/.github/actions/update@main
-      with:
-        changelogFile: ${{inputs.changelogFile}}
-        URL: ${{secrets.LB_DEVOPS_URL}}
-        DRIVER: ${{secrets.LB_DEVOPS_DRIVER}}
-        PASSWORD: ${{secrets.LB_DEVOPS_PASSWORD}}
-        USER: ${{secrets.LB_DEVOPS_USER}}
-          
-        
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Check if changelogFile is empty
+        id: check-changelog
+        run: |
+          if [[ -z "${{ github.event.inputs.changelogFile }}" ]]; then
+            echo "generateMatrix=true" >> $GITHUB_OUTPUT
+          else
+          echo "generateMatrix=false" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: Run update
+        uses: liquibase-github-actions/update@v4.23.2
+        if: steps.check-changelog.outputs.generateMatrix == 'false'
+        with:
+          changelogFile: ${{ github.event.inputs.changelogFile }}
+          url: ${{ secrets.LB_DEVOPS_URL }}
+          driver: ${{ secrets.LB_DEVOPS_DRIVER }}     
+          password: ${{ secrets.LB_DEVOPS_PASSWORD }}
+          username: ${{ secrets.LB_DEVOPS_USER }}
+          logLevel: INFO
+
+
+      - name: Generate Matrix
+        id: set-matrix
+        if: steps.check-changelog.outputs.generateMatrix == 'true'
+        run: |
+          # Generate the matrix in JSON format
+          matrix_string="["
+          first=true
+          for file in $(find migrations -type f); do
+            if [ "$first" = false ]; then
+              matrix_string="${matrix_string},"
+            fi
+            matrix_string="${matrix_string}\"$file\""
+            first=false
+          done
+          matrix_string="${matrix_string}]"
+          echo "matrix=$matrix_string" >> $GITHUB_OUTPUT
+          echo "$matrix_string"
+        shell: bash
+
+
+  update_all:
+    needs: update_one
+    runs-on: ubuntu-latest
+    if: needs.update_one.outputs.generateMatrix == 'true'
+    strategy:
+      matrix:
+        files: ${{fromJson(needs.update_one.outputs.matrix)}}
+    
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Run update
+        uses: liquibase-github-actions/update@v4.23.2
+        with:
+          changelogFile: ${{ matrix.files }}
+          url: ${{ secrets.LB_DEVOPS_URL }}
+          driver: ${{ secrets.LB_DEVOPS_DRIVER }}     
+          password: ${{ secrets.LB_DEVOPS_PASSWORD }}
+          username: ${{ secrets.LB_DEVOPS_USER }}
+          logLevel: INFO
