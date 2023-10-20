@@ -1,7 +1,4 @@
-name: Liquibase Update All
-
-on:
-  workflow_dispatch:
+name: Liquibase Update
 
     inputs:
       changelogFile:
@@ -9,8 +6,8 @@ on:
         required: false
 
 jobs:
-  matrix_setup:
-    runs-on: ubuntu-latest
+  update:
+    using: 'composite'
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       generateMatrix: ${{ steps.check-changelog.outputs.generateMatrix }}
@@ -61,13 +58,13 @@ jobs:
         shell: bash
 
 
-  perform_update:
-    needs: matrix_setup
-    runs-on: ubuntu-latest
-    if: needs.matrix_setup.outputs.generateMatrix == 'true'
+  update_all:
+    needs: update
+    using: 'composite'
+    if: needs.update.outputs.generateMatrix == 'true'
     strategy:
       matrix:
-        files: ${{fromJson(needs.matrix_setup.outputs.matrix)}}
+        files: ${{fromJson(needs.update.outputs.matrix)}}
     
     steps:
       - name: Check out repository

@@ -1,0 +1,22 @@
+name : update 
+
+on:
+    workflow_dispatch:
+        inputs:
+         changelogFile:
+            required: false
+
+jobs:
+ build:
+  runs-on: ubuntu-latest
+  steps:
+    - name: checkout
+      uses: actions/checkout@main
+
+    - name: php
+      if: ${{ inputs.LANGUAGE == 'php' }}
+      uses: thalisson1980/liquibase/.github/actions/update@main
+      with:
+        LANGUAGE_VERSION: ${{inputs.LANGUAGE_VERSION}}
+          
+        
