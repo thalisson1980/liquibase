@@ -27,7 +27,7 @@ jobs:
       - name: Check if changelogFile is empty
         id: check-changelog
         run: |
-          if [[ -z "${{ github.event.inputs.changelogFile }}" ]]; then
+          if [[ -z "${{ inputs.changelogFile }}" ]]; then
             echo "::set-output name=generateMatrix::true"
           else
           echo "::set-output name=generateMatrix::false"
@@ -38,11 +38,11 @@ jobs:
         uses: liquibase-github-actions/update@v4.23.2
         if: steps.check-changelog.outputs.generateMatrix == 'false'
         with:
-          changelogFile: ${{ github.event.inputs.changelogFile }}
-          url: ${{ github.event.inputs.URL }}
-          driver: ${{ github.event.inputs.DRIVER }}     
-          password: ${{ github.event.inputs.PASSWORD }}
-          username: ${{ github.event.inputs.USER }}
+          changelogFile: ${{ inputs.changelogFile }}
+          url: ${{ inputs.URL }}
+          driver: ${{ inputs.DRIVER }}     
+          password: ${{ inputs.PASSWORD }}
+          username: ${{ inputs.USER }}
           logLevel: INFO
 
 
@@ -82,8 +82,8 @@ jobs:
         uses: liquibase-github-actions/update@v4.23.2
         with:
           changelogFile: ${{ matrix.files }}
-          url: ${{ github.event.inputs.URL }}
-          driver: ${{ github.event.inputs.DRIVER }}     
-          password: ${{ github.event.inputs.PASSWORD }}
-          username: ${{ github.event.inputs.USER }}
+          url: ${{ inputs.URL }}
+          driver: ${{ inputs.DRIVER }}     
+          password: ${{ inputs.PASSWORD }}
+          username: ${{ inputs.USER }}
           logLevel: INFO
