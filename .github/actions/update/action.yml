@@ -46,10 +46,10 @@ runs:
         if: steps.check-changelog.outputs.generateMatrix == 'true'
         run: |
           # Download and install Liquibase
-          LIQUIBASE_VERSION="4.24.0"
-          wget "https://github.com/liquibase/liquibase/releases/download/v${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}.tar.gz"
-          tar -xzf "liquibase-${LIQUIBASE_VERSION}.tar.gz"
-          chmod 777 liquibase
+          LB_VERSION="4.24.0"
+          curl -L https://github.com/liquibase/liquibase/releases/download/v${LB_VERSION}/liquibase-${LB_VERSION}.zip --output liquibase-${LB_VERSION}.zip
+          unzip -o -d liquibase liquibase-${LB_VERSION}.zip
+          ./liquibase/liquibase --version
           
           # Move Liquibase to a directory in your PATH
           sudo mv liquibase /usr/local/bin/
