@@ -55,6 +55,7 @@ runs:
 
           # Move Liquibase to a directory in your PATH
           sudo mv liquibase /usr/local/bin/
+        shell: bash
 
 
       - name: Generate Matrix
