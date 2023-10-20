@@ -17,5 +17,9 @@ jobs:
       uses: thalisson1980/liquibase/.github/actions/update@main
       with:
         changelogFile: ${{inputs.changelogFile}}
+        URL: ${{secrets.LB_DEVOPS_URL}}
+        DRIVER: ${{secrets.LB_DEVOPS_DRIVER}}
+        PASSWORD: ${{secrets.LB_DEVOPS_PASSWORD}}
+        USER: ${{secrets.LB_DEVOPS_USER}}
           
         
