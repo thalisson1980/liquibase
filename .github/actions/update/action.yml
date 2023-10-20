@@ -13,7 +13,7 @@ inputs:
     description: 'Name of the changelog file with extension'
     required: false
 
-jobs:
+runs:
   update:
     using: 'composite'
     outputs:
