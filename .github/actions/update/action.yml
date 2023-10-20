@@ -49,13 +49,7 @@ runs:
           LB_VERSION="4.24.0"
           curl -L https://github.com/liquibase/liquibase/releases/download/v${LB_VERSION}/liquibase-${LB_VERSION}.zip --output liquibase-${LB_VERSION}.zip
           unzip -o -d liquibase liquibase-${LB_VERSION}.zip
-          echo "./liquibase/liquibase --version"
-          
-          # Move Liquibase to a directory in your PATH
-          sudo mv liquibase /usr/local/bin/
-          
-          # Append Liquibase installation directory to the PATH
-          echo 'export PATH="$PATH:/usr/local/bin"' >> ~/.bashrc
+          ./liquibase/liquibase --version
         shell: bash
 
 
@@ -75,7 +69,7 @@ runs:
                         --url="$url" \
                         --username="$username" \
                         --password="$password" \
-                        --classpath= "./liquibase/liquibase" \
+                        --classpath=/home/runner/work/liquibase/liquibase/liquibase \
                         update
             fi
           done
