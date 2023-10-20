@@ -49,7 +49,7 @@ runs:
           for file in migrations/*; do
             if [[ -f "$file" ]]; then
               echo "Updating using Liquibase for file: $file"
-              changelogFile="${{ file }}"
+              changelogFile="$file"
               url="${{ inputs.URL }}"
               username="${{ inputs.USER }}"
               password="${{ inputs.PASSWORD }}"
