@@ -75,6 +75,7 @@ runs:
                         --url="$url" \
                         --username="$username" \
                         --password="$password" \
+                        --classpath= "./liquibase/liquibase" \
                         update
             fi
           done
