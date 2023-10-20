@@ -46,7 +46,8 @@ runs:
         id: set-matrix
         if: steps.check-changelog.outputs.generateMatrix == 'true'
          run: |
-          for file in migrations/*; do
+          migration_files=($(find migrations/ -type f -name "*.sql"))
+          for file in "${migration_files[@]}"; do
             if [[ -f "$file" ]]; then
               echo "Updating using Liquibase for file: $file"
               changelogFile="${{ $file }}"
