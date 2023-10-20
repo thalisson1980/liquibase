@@ -1,6 +1,14 @@
 name: Liquibase Update
 
 inputs:
+  URL:
+    required: true
+  PASSWORD:
+    required: true
+  USER:
+    required: true
+  DRIVER:
+    required: false
   changelogFile:
     description: 'Name of the changelog file with extension'
     required: false
@@ -19,7 +27,7 @@ jobs:
       - name: Check if changelogFile is empty
         id: check-changelog
         run: |
-          if [[ -z "${{ github.event.inputs.changelogFile }}" ]]; then
+          if [[ -z "${{ inputs.changelogFile }}" ]]; then
             echo "::set-output name=generateMatrix::true"
           else
           echo "::set-output name=generateMatrix::false"
@@ -30,11 +38,11 @@ jobs:
         uses: liquibase-github-actions/update@v4.23.2
         if: steps.check-changelog.outputs.generateMatrix == 'false'
         with:
-          changelogFile: ${{ github.event.inputs.changelogFile }}
-          url: ${{ secrets.LB_DEVOPS_URL }}
-          driver: ${{ secrets.LB_DEVOPS_DRIVER }}     
-          password: ${{ secrets.LB_DEVOPS_PASSWORD }}
-          username: ${{ secrets.LB_DEVOPS_USER }}
+          changelogFile: ${{ inputs.changelogFile }}
+          url: ${{ inputs.URL }}
+          driver: ${{ inputs.DRIVER }}     
+          password: ${{ inputs.PASSWORD }}
+          username: ${{ inputs.USER }}
           logLevel: INFO
 
 
@@ -74,8 +82,8 @@ jobs:
         uses: liquibase-github-actions/update@v4.23.2
         with:
           changelogFile: ${{ matrix.files }}
-          url: ${{ secrets.LB_DEVOPS_URL }}
-          driver: ${{ secrets.LB_DEVOPS_DRIVER }}     
-          password: ${{ secrets.LB_DEVOPS_PASSWORD }}
-          username: ${{ secrets.LB_DEVOPS_USER }}
+          url: ${{ inputs.URL }}
+          driver: ${{ inputs.DRIVER }}     
+          password: ${{ inputs.PASSWORD }}
+          username: ${{ inputs.USER }}
           logLevel: INFO
