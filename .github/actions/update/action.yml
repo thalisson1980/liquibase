@@ -42,6 +42,21 @@ runs:
           logLevel: INFO
 
 
+      - name: Set up Liquibase
+        if: steps.check-changelog.outputs.generateMatrix == 'true'
+        run: |
+          # Download and install Liquibase
+           LIQUIBASE_VERSION="4.24.0"
+    
+          # Download and install Liquibase
+          wget "https://github.com/liquibase/liquibase/releases/download/v${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}.tar.gz"
+          tar -xzf "liquibase-${LIQUIBASE_VERSION}.tar.gz"
+          chmod +x liquibase
+
+          # Move Liquibase to a directory in your PATH
+          sudo mv liquibase /usr/local/bin/
+
+
       - name: Generate Matrix
         id: set-matrix
         if: steps.check-changelog.outputs.generateMatrix == 'true'
