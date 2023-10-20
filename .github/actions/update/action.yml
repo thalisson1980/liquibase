@@ -14,8 +14,7 @@ inputs:
     required: false
 
 runs:
-    using: 'docker'
-    image: 'Dockerfile'
+    using: 'composite'
 
     steps:
       - name: Check out repository
@@ -50,7 +49,7 @@ runs:
           LIQUIBASE_VERSION="4.24.0"
           wget "https://github.com/liquibase/liquibase/releases/download/v${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}.tar.gz"
           tar -xzf "liquibase-${LIQUIBASE_VERSION}.tar.gz"
-          chmod +x liquibase
+          chmod 777 liquibase
           
           # Move Liquibase to a directory in your PATH
           sudo mv liquibase /usr/local/bin/
