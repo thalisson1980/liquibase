@@ -45,7 +45,7 @@ runs:
       - name: Generate Matrix
         id: set-matrix
         if: steps.check-changelog.outputs.generateMatrix == 'true'
-         run: |
+        run: |
           migration_files=($(find migrations/ -type f -name "*.sql"))
           for file in "${migration_files[@]}"; do
             if [[ -f "$file" ]]; then
