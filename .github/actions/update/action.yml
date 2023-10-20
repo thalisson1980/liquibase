@@ -77,8 +77,9 @@ runs:
               username="${{ inputs.USER }}"
               password="${{ inputs.PASSWORD }}"
 
-              # Use the liquibase-github-actions/update action
               echo "::group::Liquibase Update"
+              # Run the liquibase-github-actions/update action for each changelog file
+              - name: Update all
               uses: liquibase-github-actions/update@v4.23.2
               with:
                 changelogFile: ${{ changelogFile }}
