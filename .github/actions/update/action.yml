@@ -13,9 +13,8 @@ inputs:
     description: 'Name of the changelog file with extension'
     required: false
 
-jobs:
-  update:
-    runs-on: ubuntu-latest
+  runs:
+    using: 'composite'
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       generateMatrix: ${{ steps.check-changelog.outputs.generateMatrix }}
@@ -50,40 +49,14 @@ jobs:
         id: set-matrix
         if: steps.check-changelog.outputs.generateMatrix == 'true'
         run: |
-          # Generate the matrix in JSON format
-          matrix_string="["
-          first=true
-          for file in $(find migrations -type f); do
-            if [ "$first" = false ]; then
-              matrix_string="${matrix_string},"
-            fi
-            matrix_string="${matrix_string}\"$file\""
-            first=false
-          done
-          matrix_string="${matrix_string}]"
-          echo "::set-output name=matrix::$matrix_string"
-          echo "$matrix_string"
-        shell: bash
+          # Replace with your actual Liquibase update command
+          changelogFile="${{ github.event.inputs.changelogFile }}"
+          url="${{ github.event.inputs.URL }}"
+          username="${{ github.event.inputs.USER }}"
+          password="${{ github.event.inputs.PASSWORD }}"
 
-
-  update_all:
-    needs: update
-    runs-on: ubuntu-latest
-    if: needs.update.outputs.generateMatrix == 'true'
-    strategy:
-      matrix:
-        files: ${{fromJson(needs.update.outputs.matrix)}}
-    
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-
-      - name: Run update
-        uses: liquibase-github-actions/update@v4.23.2
-        with:
-          changelogFile: ${{ matrix.files }}
-          url: ${{ inputs.URL }}
-          driver: ${{ inputs.DRIVER }}     
-          password: ${{ inputs.PASSWORD }}
-          username: ${{ inputs.USER }}
-          logLevel: INFO
+          liquibase --changeLogFile="$changelogFile" \
+                    --url="$url" \
+                    --username="$username" \
+                    --password="$password" \
+                    update
