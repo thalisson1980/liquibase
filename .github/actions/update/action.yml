@@ -14,7 +14,8 @@ inputs:
     required: false
 
 runs:
-    using: 'composite'
+    using: 'docker'
+    image: 'Dockerfile'
 
     steps:
       - name: Check out repository
