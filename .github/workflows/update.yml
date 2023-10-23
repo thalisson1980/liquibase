@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
-      generateMatrix: ${{ steps.check-changelog.outputs.generateMatrix }}
+      generate_matrix: ${{ steps.check-changelog.outputs.generate_matrix }}
 
     steps:
       - name: Check out repository
@@ -31,15 +31,15 @@ jobs:
         id: check-changelog
         run: |
           if [[ -z "${{ github.event.inputs.changelog_file }}" ]]; then
-            echo "generateMatrix=true" >> $GITHUB_OUTPUT
+            echo "generate_matrix=true" >> $GITHUB_OUTPUT
           else
-          echo "generateMatrix=false" >> $GITHUB_OUTPUT
+          echo "generate_matrix=false" >> $GITHUB_OUTPUT
           fi
         shell: bash
 
       - name: Run update
         uses: liquibase-github-actions/update@v4.23.2
-        if: steps.check-changelog.outputs.generateMatrix == 'false'
+        if: steps.check-changelog.outputs.generate_matrix == 'false'
         with:
           changelogFile: migrations/${{ github.event.inputs.changelog_file }}.sql
           url: ${{ github.event.inputs.url }}
@@ -51,7 +51,7 @@ jobs:
 
       - name: Generate Matrix
         id: set-matrix
-        if: steps.check-changelog.outputs.generateMatrix == 'true'
+        if: steps.check-changelog.outputs.generate_matrix == 'true'
         run: |
           # Generate the matrix in JSON format
           matrix_string="["
@@ -72,7 +72,7 @@ jobs:
   update_all:
     needs: update_one
     runs-on: ubuntu-latest
-    if: needs.update_one.outputs.generateMatrix == 'true'
+    if: needs.update_one.outputs.generate_matrix == 'true'
     strategy:
       matrix:
         files: ${{fromJson(needs.update_one.outputs.matrix)}}
